@@ -1,17 +1,18 @@
-
+#include "console.h"
 
 void kernel_entry()
 {
-	char* p_video_mem = (char*) 0xb8000;
+	init_console();
 
-	char* hellotext = "Hello from the SaturnOS!                          ";
+	clear_screen();
 
-	char* rollText;
-	while(*hellotext)
-	{
-		*(p_video_mem) = *(hellotext++);
-		p_video_mem += 2;
-	}
+	char* hellotext = "Hello from the SaturnOS!\n";
+
+	print_to_console(hellotext);
+
+	char* context = "Console initialized...\n";
+
+	print_to_console(context);
 
 	while(1) {  }
 	return;
