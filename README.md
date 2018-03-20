@@ -4,6 +4,9 @@ My personal project for OS development.
 
 ## Changelog
 
+20.3.2018 - Add string.h - It is ISO C compicant, as far as it is implemented - 
+some of the functions are still missing.
+
 19.3.2018 - Add Makefile, add very basic console write functionality. 
 Divide code into smaller modules... Inline assembly is pretty hard ...
 
