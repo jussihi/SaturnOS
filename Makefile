@@ -6,7 +6,7 @@ AS=nasm
 ASFLAGS=-f bin
 CC=gcc
 CFLAGS=-ffreestanding -fno-pie -c -m32 -I./include
-KERNOBJ=kernel/kernel.o kernel/console.o kernel/io.o kernel/string.o
+KERNOBJ=kernel/kernel.o kernel/console.o kernel/io.o
 
 all: SaturnOS.bin 
 
