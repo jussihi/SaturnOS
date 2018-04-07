@@ -10,11 +10,12 @@ void kernel_entry()
 	// create the display driver and set it active. Also print something through it.
 	SaturnDISPLAY disp = consolemode_init();
 	uint8_t disp_id = display_add(disp);
-	display_change(disp_id);
+	uint8_t a = display_change(disp_id);
 
 	main_display = display_get_current();
+	main_display->puts("Hello world from protected (32bit) mode ...\n");
 
-	main_display->puts("Hello world!\nFrom SaturnOS...");
+	kprintf("%s %d 0x%x \n", "Testing the kprintf functionality!", 100, 16);
 
 	while(1) {  }
 	return;

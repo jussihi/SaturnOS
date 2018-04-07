@@ -31,5 +31,7 @@ uint8_t display_change(uint8_t _id);
 
 SaturnDISPLAY* display_get_current();
 
+int kprintf(const char* _s, ...);
+
 
 #endif

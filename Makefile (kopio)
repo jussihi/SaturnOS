@@ -5,7 +5,7 @@
 AS=nasm
 ASFLAGS=-f bin
 CC=gcc
-CFLAGS=-ffreestanding -fno-stack-protector -fno-pie -m32 -c -I./include
+CFLAGS=-ffreestanding -fno-pie -c -m32 -I./include
 KERNOBJ=kernel/kernel.o kernel/io.o sys/display/display.o sys/display/consolemode.o
 
 all: SaturnOS.bin 
