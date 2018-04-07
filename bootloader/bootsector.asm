@@ -86,7 +86,7 @@ HEX_TEMPLATE:
 	db '0x???? ',0
 
 GREETER:
-	db 'JBoot',0
+	db 'Boot',0
 
 ERROR:
 	db 'error!',0
