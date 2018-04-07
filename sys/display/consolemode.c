@@ -60,6 +60,16 @@ void consolemode_clear()
   display.console.y = 0;
 }
 
+// copy row by row, insert last row full of spaces
+void consolemode_scroll_up()
+{
+  for(uint32_t i = 0; i < CONSOLE_HEIGHT; i++)
+  {
+    memcpy((int8_t*)(CONSOLE_VGA_START + (y * 2 * CONSOLE_WIDTH)), (int8_t*)(CONSOLE_VGA_START + ((y+1) * 2 * CONSOLE_WIDTH)), CONSOLE_WIDTH*2);
+  }
+  memset(((char*)(CONSOLE_VGA_START + (CONSOLE_HEIGHT * 2 * CONSOLE_WIDTH))), consolemode_create_printable(' '), CONSOLE_WIDTH * 2);
+}
+
 void consolemode_putc(const char _c)
 {
   // newline check, much better than in the old version!
@@ -68,6 +78,14 @@ void consolemode_putc(const char _c)
     display.console.x = 0;
     display.console.y++;
   }
+
+  // do we need to scroll the console?
+  if(display.console.x >= CONSOLE_HEIGHT - 1)
+  {
+    consolemode_scroll_up();
+    display.console.y --;
+  }
+
   // is the string terminated?
   if(_c == 0 || _c == '\n')
   {
