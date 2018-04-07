@@ -28,31 +28,60 @@ void consolemode_after_set(uint8_t _id)
 uint16_t consolemode_create_printable(char _c)
 {
   uint16_t c = (uint16_t)_c;
-  return char | (0x0F) << 8;
+  return c | (0x0F) << 8;
 }
 
+// initial initialization of a console
 SaturnDISPLAY consolemode_init()
 {
   display.width  = CONSOLE_WIDTH;
   display.height = CONSOLE_HEIGHT;
   display.console.x = 0;
   display.console.y = 0;
-
+  display.puts = consolemode_puts;
+  display.putc = consolemode_putc;
+  display.clear = consolemode_clear;
+  display.after_register = consolemode_after_register;
+  display.after_set = consolemode_after_set;
+  return display;
 }
 
 // clears the screen by filling it with spaces
 void consolemode_clear()
 {
-  uint32_t index = 0;
   for(uint16_t y = 0; y < CONSOLE_HEIGHT; y++)
   {
     for(uint16_t x = 0; x < CONSOLE_WIDTH; x++)
     {
-      index = y * 2 * CONSOLE_WIDTH + x * 2;
-      *(uint16_t*)(CONSOLE_VGA_START + index) = consolemode_create_printable(' ');
+      *(uint16_t*)(CONSOLE_VGA_START + (y * 2 * CONSOLE_WIDTH + x * 2)) = consolemode_create_printable(' ');
     }
   }
   display.console.x = 0;
   display.console.y = 0;
 }
 
+void consolemode_putc(const char _c)
+{
+  // newline check, much better than in the old version!
+  if(_c == '\n' || display.console.x >= CONSOLE_WIDTH)
+  {
+    display.console.x = 0;
+    display.console.y++;
+  }
+  // is the string terminated?
+  if(_c == 0 || _c == '\n')
+  {
+    return;
+  }
+  // print the next char to the screen
+  *(uint16_t*)(CONSOLE_VGA_START + (display.console.y * 2 * CONSOLE_WIDTH + display.console.x * 2)) = consolemode_create_printable(_c);
+  display.console.x++;
+}
+
+void consolemode_puts(const char* _s)
+{
+  while(*_s != 0)
+  {
+    consolemode_putc(*_s++);
+  }
+}

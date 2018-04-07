@@ -20,7 +20,7 @@ uint8_t display_change(uint8_t _id)
 {
   // sanity check, is the display the current one?
   // is there a display corresponding this ID ?
-  if (current_display == _id || latest_added < _id)
+  if (current_display == _id || latest_added < _id)
   {
     return 0;
   } 
@@ -33,7 +33,7 @@ uint8_t display_change(uint8_t _id)
 }
 
 // return the current display pointer
-SaturnDISPLAY display_get_current()
+SaturnDISPLAY* display_get_current()
 {
   return &displaylist[current_display];
 }

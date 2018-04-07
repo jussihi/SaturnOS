@@ -4,7 +4,7 @@ My personal project for OS development.
 
 ## Changelog
 
-7.4.2018 - Finally had some time to get further with this OS dev project .. Display driver WIP. 
+7.4.2018 - Finally had some time to get further with this OS dev project .. Display driver WORKS. 
 Using levOS as my inspiration here. 
 
 20.3.2018 - Add string.h - It is ISO C compicant, as far as it is implemented - 

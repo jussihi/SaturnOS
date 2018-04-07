@@ -6,7 +6,7 @@ AS=nasm
 ASFLAGS=-f bin
 CC=gcc
 CFLAGS=-ffreestanding -fno-pie -c -m32 -I./include
-KERNOBJ=kernel/kernel.o kernel/console.o kernel/io.o
+KERNOBJ=kernel/kernel.o kernel/io.o sys/display/display.o sys/display/consolemode.o
 
 all: SaturnOS.bin 
 
@@ -22,5 +22,9 @@ kernel/kernel.bin: $(KERNOBJ)
 kernel/%.o: kernel/%.c
 	$(CC) $(CFLAGS) $< -o $@
 
+sys/display/%.o: sys/display/%.c
+	$(CC) $(CFLAGS) $< -o $@
+
 clean:
-	rm bootloader/bootsector.bin kernel/*.o kernel/kernel.bin SaturnOS.bin
+	find . -name *.o -exec rm -rf '{}' \;
+	find . -name *.bin -exec rm -rf '{}' \;

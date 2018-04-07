@@ -4,7 +4,7 @@
 #include "string.h"
 #include "stdint.h"
 
-#define DIPLAY_MAX_DISPLAYS 8
+#define DISPLAY_MAX_DISPLAYS 8
 
 typedef struct {
   uint32_t x;
@@ -19,11 +19,17 @@ typedef struct {
   // print functionality
   void (*puts)(const char*);
   void (*putc)(const char);
+  void (*clear)();
   // events
   void (*after_register)();
   void (*after_set)(uint8_t id);
 } SaturnDISPLAY;
 
+uint8_t display_add(SaturnDISPLAY _d);
+
+uint8_t display_change(uint8_t _id);
+
+SaturnDISPLAY* display_get_current();
 
 
 #endif

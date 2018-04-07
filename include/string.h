@@ -41,8 +41,8 @@ static inline int memcmp(const void* _s1, const void* _s2, size_t _n)
 static inline void* memcpy(void* _dest, const void* _src, size_t _num)
 {
     // byte oriented slooow copy (optimize for 32-bit later!)
-    char* src = _src;
-    const char* dest = _dest
+    const char* src = _src;
+    char* dest = _dest;
     while(_num--)
     {
         *dest++ = *src++;
@@ -59,7 +59,7 @@ static inline void* memmove(void* _dest, const void* _src, size_t _num)
     {
         while(_num--)
         {
-            *dest++ = *_src++;
+            *dest++ = *(unsigned char*)_src++;
         }
     }
     else
@@ -68,7 +68,7 @@ static inline void* memmove(void* _dest, const void* _src, size_t _num)
         _src += _num;
         while(_num--)
         {
-            *--dest = *--_src++;
+            *--dest = *(unsigned char*)--_src;
         }
     }
     return _dest;
@@ -79,7 +79,7 @@ static inline void* memset(void* _s, int _c, size_t _n)
 {
     unsigned char* s = _s;
     unsigned char c = _c;
-    while(n--)
+    while(_n--)
     {
         *s++ = c;
     }
@@ -102,12 +102,12 @@ static inline char* strcat(char* _dest, const char* _src)
 static inline char* strchr(const char* _s, int _c)
 {
     char c = _c;
-    while(*s++ != c);
-    if(*s == 0)
+    while(*_s++ != c);
+    if(*_s == 0)
     {
         return NULL;
     }
-    return (char *)s;
+    return (char *)_s;
 }
 
 
@@ -215,8 +215,11 @@ static inline char* strrchr(const char* _s, int _c)
     char* last = NULL;
     while(*_s)
     {
-        if(*_s == c) last = _s;
-        s++;
+        if(*_s == c)
+        {
+            last = (char*)_s;
+        }
+        _s++;
     }
     return last;
 }
@@ -239,51 +242,38 @@ static inline char* strstr(const char* _s1, const char* _s2)
     {
         if(!memcmp(_s1++,_s2,n))
         {
-            return _s1-1;
+            return (char*)_s1-1;
         }
     }
     return NULL;
 }
 
 // borrowed from the spooky internet, hope it works!
-static char* ___strtok;
 static inline char* strtok(char* _str, const char* _delim)
 {
-    char* token;
-
-    if(_str == NULL)
+    static char* p=0;
+    if(_str)
     {
-        _str = ___strtok;
+        p=_str;
     }
-
-    // search for delimiters
-    _str += strspn(_str, _delim);
-    if(*_str == 0)
+    else if(!p)
     {
-        ___strtok = _str
-        return NULL;
+        return 0;
     }
-
-    // find the end of token
-    token = _str;
-    _str = strpbrk(token, _delim);
-
-    if(_str == NULL)
+    _str = p + strspn(p, _delim);
+    p = _str + strcspn(_str, _delim);
+    if(p == _str)
     {
-        ___strtok = memchr(___strtok, '\0');
+        return p = 0;
     }
-    else
-    {
-        *_str = '\0';
-        ___strtok = _str+1;
-    }
-    return token;
+    p = *p ? *p=0,p+1 : 0;
+    return _str;
 }
 
 
 static inline size_t strxfrm(char* _dest, const char* _src, size_t _n)
 {
-    TODO: implement !
+    // TODO: implement !
     return 0;
 }
 
