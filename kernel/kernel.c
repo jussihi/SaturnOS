@@ -3,6 +3,7 @@
 #include "../include/display/display.h"
 #include "../include/display/consolemode.h"
 #include "../include/arch/x86/gdt.h"
+#include "../include/arch/x86/idt.h"
 
 
 static SaturnDISPLAY* main_display = NULL;
@@ -20,6 +21,10 @@ void kernel_entry()
 	kprintf("%s %d 0x%x \n", "Testing the kprintf functionality!", 100, 16);
 
   gdt_init();
+
+  idt_init();
+
+  kprintf("Everything init.\n");
 
 	while(1) {  }
 	return;

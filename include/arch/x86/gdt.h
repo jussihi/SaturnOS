@@ -1,16 +1,17 @@
-#ifndef _SATURNOS_CONSOLE_HH
-#define _SATURNOS_CONSOLE_HH
+#ifndef _SATURNOS_GDT_HH
+#define _SATURNOS_GDT_HH
 
 #include "../../stdint.h"
 
-typedef struct __attribute((__packed__)) {
+typedef struct {
   uint16_t limit_lo;
   uint16_t base_lo;
   uint8_t base_mid;
   uint8_t type;
   uint8_t flags_limit_nibbles;
   uint8_t base_hi;
-} GDT_t;
+} __attribute__((__packed__)) GDT_t;
+
 
 void gdt_init();
 

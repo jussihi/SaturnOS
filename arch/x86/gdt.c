@@ -36,7 +36,7 @@ void gdt_init()
 
   gdt_set_descriptors();
 
-  kprintf("GDT initialized.");
+  kprintf("GDT initialized.\n");
 }
 
 int gdt_set_descriptors()

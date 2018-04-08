@@ -1,0 +1,63 @@
+#include "../../include/arch/x86/idt.h"
+#include "../../include/display/display.h"
+
+static uint32_t idt_location = 0;
+static uint32_t idtr_location = 0;
+
+static uint8_t idt_test = 0;
+static uint32_t test_timeout = 0x1000;
+
+
+void idt_init()
+{
+  test_timeout = 0x1000;
+  // same idtr location as set up in the assembly file!
+  idt_location = 0x402000;
+  idtr_location = 0x401F00;
+  for(uint8_t i = 0; i < 255; i++)
+  {
+    idt_add_handler(i, (uint32_t)&idt_default_handler);
+  }
+  idt_add_handler(0x2f, (uint32_t)&idt_test_handler);
+  *(uint16_t*)idtr_location = 0x800 - 1;
+  *(uint32_t*)(idtr_location + 2) = idt_location;
+  _set_idtr();
+  __asm__ __volatile__ ("int $0x2f");
+  for(int i = 0; i < 100; i++) {}
+  if(idt_test == 1)
+  {
+    kprintf("IDT successfully initialized.\n");
+    idt_add_handler(0x2f, (uint32_t)&idt_default_handler);
+  }
+  else
+  {
+    kprintf("IDT doesn't work!\n");
+  }
+  return;
+}
+
+void idt_add_handler(uint8_t interrupt_num, uint32_t callback)
+{
+  IDT_t interrupt = {0, 0, 0, 0, 0};
+  interrupt.offset_lo = (uint16_t)(callback & 0x0000FFFF);
+  interrupt.selector = 0x10; // This is kind of the POINTER to the right entry from the beginning of the GDT. We use GDT code segment (3rd one)
+  interrupt.zero_byte = 0;
+  interrupt.type = IDT_32BIT_INTERRUPT_GATE | IDT_DPL_3 | IDT_PRESENT; // ok access rights .. 
+  interrupt.offset_hi = (uint16_t)(callback >> 16);
+  *(IDT_t*)(idt_location + sizeof(IDT_t) * interrupt_num) = interrupt;
+  return;
+}
+
+void idt_default_handler()
+{
+  return;
+}
+
+
+void idt_test_handler()
+{
+  INT_START;
+  idt_test = 1;
+  INT_END;
+  return;
+}
