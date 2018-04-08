@@ -19,6 +19,8 @@ SaturnDISPLAY consolemode_init();
 
 void consolemode_clear();
 
+void consolemode_scroll_up();
+
 void consolemode_putc(const char _c);
 
 void consolemode_puts(const char* _s);

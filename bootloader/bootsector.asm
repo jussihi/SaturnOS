@@ -6,7 +6,7 @@ mov si, GREETER
 ; mov dx, 0x1234
 ; call print_16bit_hex
 
-mov al, 9            ; read next 9 sectors (containing our mini kernel)
+mov al, 15            ; read next 9 sectors (containing our mini kernel)
 mov bx, kernel_entry ; read data to the kernel_entry
 call disk_read
 

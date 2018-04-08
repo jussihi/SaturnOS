@@ -60,10 +60,11 @@ void consolemode_clear()
   display.console.y = 0;
 }
 
+
 // copy row by row, insert last row full of spaces
 void consolemode_scroll_up()
 {
-  for(uint32_t i = 0; i < CONSOLE_HEIGHT; i++)
+  for(uint32_t y = 0; y < CONSOLE_HEIGHT; y++)
   {
     memcpy((int8_t*)(CONSOLE_VGA_START + (y * 2 * CONSOLE_WIDTH)), (int8_t*)(CONSOLE_VGA_START + ((y+1) * 2 * CONSOLE_WIDTH)), CONSOLE_WIDTH*2);
   }
@@ -80,7 +81,7 @@ void consolemode_putc(const char _c)
   }
 
   // do we need to scroll the console?
-  if(display.console.x >= CONSOLE_HEIGHT - 1)
+  if(display.console.y >= CONSOLE_HEIGHT - 1)
   {
     consolemode_scroll_up();
     display.console.y --;

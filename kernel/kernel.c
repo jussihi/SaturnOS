@@ -2,6 +2,8 @@
 #include "../include/stddef.h"
 #include "../include/display/display.h"
 #include "../include/display/consolemode.h"
+#include "../include/arch/x86/gdt.h"
+
 
 static SaturnDISPLAY* main_display = NULL;
 
@@ -16,6 +18,8 @@ void kernel_entry()
 	main_display->puts("Hello world from protected (32bit) mode ...\n");
 
 	kprintf("%s %d 0x%x \n", "Testing the kprintf functionality!", 100, 16);
+
+  gdt_init();
 
 	while(1) {  }
 	return;
