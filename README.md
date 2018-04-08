@@ -4,6 +4,8 @@ My personal project for OS development.
 
 ## Changelog
 
+8.4.2018 - Very buggy and badly implemented GDT, also IDT added. It is done properly, but some interrupts seems to hang the system completely (for example the clock interrupt 0x20 ...)
+
 7.4.2018 - Finally had some time to get further with this OS dev project .. Display driver WORKS. 
 Using levOS as my inspiration here. 
 
