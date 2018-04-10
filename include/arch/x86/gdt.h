@@ -12,6 +12,9 @@ typedef struct {
   uint8_t base_hi;
 } __attribute__((__packed__)) GDT_t;
 
+extern void _reload_segments(void);
+
+extern void _set_gdtr();
 
 void gdt_init();
 

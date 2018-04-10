@@ -10,6 +10,7 @@ static SaturnDISPLAY* main_display = NULL;
 
 void kernel_entry()
 {
+  __asm__ ("cli"::);
 	// create the display driver and set it active. Also print something through it.
 	SaturnDISPLAY disp = consolemode_init();
 	uint8_t disp_id = display_add(disp);

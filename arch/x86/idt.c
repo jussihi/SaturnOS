@@ -22,17 +22,24 @@ void idt_init()
   *(uint16_t*)idtr_location = 0x800 - 1;
   *(uint32_t*)(idtr_location + 2) = idt_location;
   _set_idtr();
+  __asm__ ("sti"::);
   __asm__ __volatile__ ("int $0x2f");
-  for(int i = 0; i < 100; i++) {}
-  if(idt_test == 1)
+  for(int i = 0; i < 100; i++)
   {
-    kprintf("IDT successfully initialized.\n");
-    idt_add_handler(0x2f, (uint32_t)&idt_default_handler);
+    // for some reason, the insides of this if is being run twice ?
+    // something still messed up with the stack  ....
+    if(idt_test == 1)
+    {
+      kprintf("IDT successfully initialized.\n");
+      idt_add_handler(0x2f, (uint32_t)&idt_default_handler);
+      break;
+    }
   }
-  else
+  if(!idt_test)
   {
     kprintf("IDT doesn't work!\n");
   }
+  __asm__ ("cli"::);
   return;
 }
 

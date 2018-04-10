@@ -4,6 +4,8 @@ My personal project for OS development.
 
 ## Changelog
 
+10.4.2018 - Found the bug in interrupts; it was that I had disabled them during bootup (when changing to protected mode) :) 3 hours well spent. Now it seems like something is messed up with the stack after IDT setup. Have to dig into that later, but at least it boots completely now !
+
 8.4.2018 - Very buggy and badly implemented GDT, also IDT added. It is done properly, but some interrupts seems to hang the system completely (for example the clock interrupt 0x20 ...)
 
 7.4.2018 - Finally had some time to get further with this OS dev project .. Display driver WORKS. 

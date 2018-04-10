@@ -12,12 +12,13 @@ static uint32_t gdt_info[2] = {0};
 
 void gdt_init()
 {
+  gdt_info[0] = 0;
   gdt_num = 0;
   GDT_t temp;
   // start the gdt table from 4MiB memory
   gdt_pdescriptors = (GDT_t*)0x401000;
   kprintf("GDT was relocated to address 0x%x\n", gdt_pdescriptors);
-  
+
   // create one null segment
   temp = gdt_create_descriptor(0, 0, 0);
   gdt_add_descriptor(temp);
@@ -41,10 +42,17 @@ void gdt_init()
 
 int gdt_set_descriptors()
 {
-  gdt_info[0] = (sizeof(GDT_t) * gdt_num) << 16;
+  gdt_info[0] = ((sizeof(GDT_t) * gdt_num) - 1) << 16;
   gdt_info[1] = (uint32_t)gdt_pdescriptors;
-  __asm__ __volatile__ ("lgdt (%0)": :"p" (((uint8_t *) gdt_info)+2));
+
+  kprintf("The GDT size in memory: %d\n", (uint16_t)*(((uint8_t*)gdt_info)+2));
+
+  __asm__ __volatile__ ("lgdt (%0)" : : "p" (((uint8_t*)gdt_info)+2));
+
+  _reload_segments();
+  kprintf("Segments reloaded. \n");
 }
+
 
 int gdt_add_descriptor(GDT_t descriptor)
 {
