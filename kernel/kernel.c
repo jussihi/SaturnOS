@@ -4,13 +4,14 @@
 #include "../include/display/consolemode.h"
 #include "../include/arch/x86/gdt.h"
 #include "../include/arch/x86/idt.h"
+#include "../include/hal.h"
+#include "../include/pic.h"
 
 
 static SaturnDISPLAY* main_display = NULL;
 
 void kernel_entry()
 {
-  __asm__ ("cli"::);
 	// create the display driver and set it active. Also print something through it.
 	SaturnDISPLAY disp = consolemode_init();
 	uint8_t disp_id = display_add(disp);
@@ -24,6 +25,10 @@ void kernel_entry()
   gdt_init();
 
   idt_init();
+
+  hal_init();
+
+  pic_init();
 
   kprintf("Everything init.\n");
 
