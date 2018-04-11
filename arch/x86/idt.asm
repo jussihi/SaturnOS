@@ -1,11 +1,11 @@
 GLOBAL _set_idtr:function
 _set_idtr:
 	push ebp
-    mov  ebp,esp
+    mov  ebp, esp
 
 	lidt [0x401F00]
 
-    mov esp,ebp
+    mov esp, ebp
 	pop ebp
     ret
 

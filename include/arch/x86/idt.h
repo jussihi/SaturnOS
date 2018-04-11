@@ -24,6 +24,8 @@ extern void _set_idtr(void);
 
 void idt_init();
 
+void idt_clock_try();
+
 void idt_add_handler(uint8_t interrupt_num, uint32_t callback);
 
 void idt_default_handler();

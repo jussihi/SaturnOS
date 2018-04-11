@@ -6,7 +6,7 @@ AS=nasm
 ASFLAGS=-f elf32
 CC=gcc
 CFLAGS=-ffreestanding -fno-stack-protector -fno-pie -m32 -c -I./include
-KERNOBJ=kernel/kernel.o sys/io.o sys/display/display.o sys/display/consolemode.o arch/x86/gdt.o arch/x86/idt-asm.o arch/x86/idt.o arch/x86/pic.o arch/x86/hal.o
+KERNOBJ=kernel/kernel.o sys/io.o sys/display/display.o sys/display/consolemode.o arch/x86/gdt.o arch/x86/idt-asm.o arch/x86/idt.o arch/x86/pic.o arch/x86/hal.o sys/keyboard/keyboard.o
 
 all: SaturnOS.bin 
 
@@ -22,6 +22,9 @@ kernel/kernel.bin: $(KERNOBJ)
 kernel/%.o: kernel/%.c
 	$(CC) $(CFLAGS) $< -o $@
 
+sys/keyboard/%.o: sys/keyboard/%.c
+	$(CC) $(CFLAGS) $< -o $@
+
 sys/display/%.o: sys/display/%.c
 	$(CC) $(CFLAGS) $< -o $@
 
@@ -33,6 +36,8 @@ arch/x86/%.o: arch/x86/%.c
 
 sys/%.o: sys/%.c
 	$(CC) $(CFLAGS) $< -o $@
+
+
 
 clean:
 	find . -name *.o -exec rm -rf '{}' \;

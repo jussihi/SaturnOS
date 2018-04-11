@@ -6,9 +6,11 @@
 #include "../include/arch/x86/idt.h"
 #include "../include/hal.h"
 #include "../include/pic.h"
+#include "../include/keyboard.h"
 
 
 static SaturnDISPLAY* main_display = NULL;
+static char* keyboard_buf = NULL;
 
 void kernel_entry()
 {
@@ -26,12 +28,27 @@ void kernel_entry()
 
   idt_init();
 
-  hal_init();
+  //hal_init();
 
-  pic_init();
+  //pic_init();
 
-  kprintf("Everything init.\n");
+  //keyboard_init();
 
-	while(1) {  }
+  //kprintf("Everything init.\n");
+
+  //__asm__ ("sti"::);
+
+  kprintf("Interrupts enabled, be careful.\n");
+
+	while(1)
+  {
+   keyboard_buf = keyboard_get_ascii();
+  if(keyboard_buf[0] != 0)
+    {
+      kprintf("%s", keyboard_buf);
+      keyboard_buf[0] = 0;
+    }
+    for(uint32_t i = 0; i < 20; i++) {}
+  }
 	return;
 }
