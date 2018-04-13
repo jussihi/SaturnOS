@@ -55,3 +55,12 @@ _set_gdtr:
 	mov esp, ebp
 	pop ebp
 	ret
+
+GLOBAL _default_idt_handler:function
+_default_idt_handler:
+	pusha
+	mov al, 0x20
+	mov dx, 0x20
+	out dx, al
+	popa
+	iret

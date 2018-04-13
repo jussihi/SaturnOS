@@ -2,7 +2,7 @@
 
 mov ah, 0x0e ; BIOS teletype, print to the screen
 
-mov si, GREETER
+; mov si, GREETER
 ; mov dx, 0x1234
 ; call print_16bit_hex
 

@@ -26,29 +26,37 @@ void kernel_entry()
 
   gdt_init();
 
+  // __asm__ ("int $0x20"::);
+
   idt_init();
 
-  //hal_init();
+  hal_init();
 
-  //pic_init();
+  pic_init();
 
-  //keyboard_init();
+  keyboard_init();
 
-  //kprintf("Everything init.\n");
+  // while(1) {}
 
-  //__asm__ ("sti"::);
+  // __asm__ ("int $0x21"::);
+
+  kprintf("Everything init.\n");
+
+  __asm__ ("sti"::);
 
   kprintf("Interrupts enabled, be careful.\n");
 
+  
+
 	while(1)
   {
-   keyboard_buf = keyboard_get_ascii();
-  if(keyboard_buf[0] != 0)
-    {
-      kprintf("%s", keyboard_buf);
-      keyboard_buf[0] = 0;
-    }
-    for(uint32_t i = 0; i < 20; i++) {}
+    //keyboard_buf = keyboard_get_ascii();
+    //if(keyboard_buf[0] != 0)
+    //{
+    //  kprintf("jippikai");
+    //  kprintf("%s", keyboard_buf);
+    //  keyboard_buf[0] = 0;
+    //}
   }
 	return;
 }

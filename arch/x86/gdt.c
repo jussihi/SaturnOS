@@ -27,7 +27,7 @@ void gdt_init()
   temp = gdt_create_descriptor(0, 0, 0);
   gdt_add_descriptor(temp);
 
-  // create code segment with code 0x9A, 64 MiB!
+  // create code segment with code 0x9A
   temp = gdt_create_descriptor(0, 64*1024*1024, 0x9A);
   gdt_add_descriptor(temp);
 
