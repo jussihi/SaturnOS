@@ -3,25 +3,26 @@
 
 #include "../../stdint.h"
 
-typedef struct {
+#define GDT_FLAG_64_BIT_MODE   (1 << 5)
+#define GDT_FLAG_32_BIT_MODE   (1 << 6)
+#define GDT_FLAG_4KB_BLOCKSIZE (1 << 7)
+
+struct gdt_entry {
   uint16_t limit_lo;
   uint16_t base_lo;
   uint8_t base_mid;
-  uint8_t type;
-  uint8_t flags_limit_nibbles;
+  uint8_t access;
+  uint8_t granularity;
   uint8_t base_hi;
-} __attribute__((__packed__)) GDT_t;
+} __attribute__((__packed__));
 
-extern void _reload_segments(void);
+#define GDT_ENTRY(base, limit, access, granularity) \
+  { (limit) & 0xFFFF,                                 \
+    (base) >> 0 & 0xFFFF,                             \
+    (base) >> 16 & 0xFF,                              \
+    (access) & 0xFF,                                  \
+    ((limit) >> 16 & 0x0F) | ((granularity) & 0xF0),  \
+    (base) >> 24 & 0xFF,  }
 
-extern void _set_gdtr();
-
-void gdt_init();
-
-int gdt_set_descriptors();
-
-int gdt_add_descriptor(GDT_t descriptor);
-
-GDT_t gdt_create_descriptor(uint32_t base, uint32_t limit, uint8_t type);
 
 #endif

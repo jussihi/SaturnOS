@@ -3,97 +3,24 @@
 
 // https://wiki.osdev.org/GDT_Tutorial
 
-static GDT_t* gdt_pdescriptors;
-static uint8_t gdt_num = 0;
 
-static uint32_t gdt_info[2] = {0};
-
-
-
-void gdt_init()
+struct gdt_entry gdt[] = 
 {
-  gdt_info[0] = 0;
-  gdt_num = 0;
-  GDT_t temp;
-  // start the gdt table from 4MiB memory
-  gdt_pdescriptors = (GDT_t*)0x401000;
-  kprintf("GDT was relocated to address 0x%x\n", gdt_pdescriptors);
+  // 0x00 null seg
+  GDT_ENTRY(0, 0, 0, 0),
 
-  // create one null segment
-  temp = gdt_create_descriptor(0, 0, 0);
-  gdt_add_descriptor(temp);
+  // 0x08 kernel code segment
+  GDT_ENTRY(0, 0xFFFFFFFF, 0x9A, GDT_FLAG_32_BIT_MODE | GDT_FLAG_4KB_BLOCKSIZE),
 
-  // create one dummy segment for possible future use
-  temp = gdt_create_descriptor(0, 0, 0);
-  gdt_add_descriptor(temp);
+  // 0x10 Kernel data segment
+  GDT_ENTRY(0, 0xFFFFFFFF, 0x92, GDT_FLAG_32_BIT_MODE | GDT_FLAG_4KB_BLOCKSIZE),
 
-  // create code segment with code 0x9A
-  temp = gdt_create_descriptor(0, 64*1024*1024, 0x9A);
-  gdt_add_descriptor(temp);
+  // user code segment
+  GDT_ENTRY(0, 0xFFFFFFFF, 0xFA, GDT_FLAG_32_BIT_MODE | GDT_FLAG_4KB_BLOCKSIZE),
 
-  // create one data segment with code 0x92
-  temp = gdt_create_descriptor(0, 64*1024*1024, 0x92);
-  gdt_add_descriptor(temp);
+  // user data segment
+  GDT_ENTRY(0, 0xFFFFFFFF, 0xF2, GDT_FLAG_32_BIT_MODE | GDT_FLAG_4KB_BLOCKSIZE),
 
-  gdt_set_descriptors();
+};
 
-  kprintf("GDT initialized.\n");
-}
-
-int gdt_set_descriptors()
-{
-  gdt_info[0] = ((sizeof(GDT_t) * gdt_num) - 1) << 16;
-  gdt_info[1] = (uint32_t)gdt_pdescriptors;
-
-  kprintf("The GDT size in memory: %d\n", (uint16_t)*(((uint8_t*)gdt_info)+2));
-
-  __asm__ __volatile__ ("lgdt (%0)" : : "p" (((uint8_t*)gdt_info)+2));
-
-  _reload_segments();
-  kprintf("Segments reloaded. \n");
-}
-
-
-int gdt_add_descriptor(GDT_t descriptor)
-{
-  gdt_pdescriptors[gdt_num++] = descriptor;
-  return 1;
-}
-
-GDT_t gdt_create_descriptor(uint32_t base, uint32_t limit, uint8_t type)
-{
-  GDT_t descriptor = { 0, 0, 0, 0, 0, 0 };
-
-  if(limit > 65536)
-  {
-    // sanity check for multiplication check
-    if((limit & 0xFFF) != 0xFFF)
-    {
-      limit = (limit >> 12)-1;
-    }
-    else
-    {
-      limit = limit >> 12;
-    }
-    descriptor.flags_limit_nibbles = 0xC0;
-  }
-  else
-  {
-    descriptor.flags_limit_nibbles = 0x40;
-  }
-
-  // put limit into right place
-  descriptor.limit_lo = limit & 0xFFFF;
-  descriptor.flags_limit_nibbles |= (limit >> 16) & 0xF;
-
-  // put base to the right place
-
-  descriptor.base_lo  = base & 0xFFFF;
-  descriptor.base_mid = (base >> 16) & 0xFF;
-  descriptor.base_hi  = (base >> 24) & 0xFF; 
-
-  // type
-  descriptor.type = type;
-
-  return descriptor;
-}
+uint16_t gdt_size_for_asm = sizeof(gdt) - 1;

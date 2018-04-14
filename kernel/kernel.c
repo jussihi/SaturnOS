@@ -13,6 +13,8 @@
 static SaturnDISPLAY* main_display = NULL;
 static char* keyboard_buf = NULL;
 
+extern struct gdt_entry gdt[];
+
 void kernel_entry()
 {
 	// create the display driver and set it active. Also print something through it.
@@ -25,7 +27,7 @@ void kernel_entry()
 
 	kprintf("%s %d 0x%x \n", "Testing the kprintf functionality!", 100, 16);
 
-  gdt_init();
+  kprintf("GDT Location set to   0x%x !\n", gdt);
 
   // __asm__ ("int $0x20"::);
 
@@ -52,7 +54,7 @@ void kernel_entry()
 
   kprintf("Everything init.\n");
 
-  __asm__ ("int $0x21"::);
+  //__asm__ ("int $0x21"::);
 
   // __asm__ ("int $0x20"::);
 
