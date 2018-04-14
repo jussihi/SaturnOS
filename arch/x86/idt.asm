@@ -16,12 +16,14 @@ _reload_segments:
 	jmp 0x10:reload_CS
 
 reload_CS:
+	push eax
 	mov ax, 0x18
 	mov ds, ax
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
 	mov ss, ax
+	pop eax
 	ret
 
 
@@ -58,9 +60,9 @@ _set_gdtr:
 
 GLOBAL _default_idt_handler:function
 _default_idt_handler:
-	pusha
+	pushal
 	mov al, 0x20
 	mov dx, 0x20
 	out dx, al
-	popa
-	iret
+	popal
+	iretl

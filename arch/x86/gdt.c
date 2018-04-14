@@ -64,15 +64,17 @@ GDT_t gdt_create_descriptor(uint32_t base, uint32_t limit, uint8_t type)
 {
   GDT_t descriptor = { 0, 0, 0, 0, 0, 0 };
 
-  // sanity check for multiplication check
-  if(limit > 65536 && (limit & 0xFFF) != 0xFFF)
-  {
-    // panic here !
-  }
-
   if(limit > 65536)
   {
-    limit = limit >> 12;
+    // sanity check for multiplication check
+    if((limit & 0xFFF) != 0xFFF)
+    {
+      limit = (limit >> 12)-1;
+    }
+    else
+    {
+      limit = limit >> 12;
+    }
     descriptor.flags_limit_nibbles = 0xC0;
   }
   else

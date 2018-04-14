@@ -17,8 +17,9 @@ typedef struct {
 #define IDT_PRESENT      0x80
 
 #define INT_START asm volatile("pusha");
+
 #define INT_END asm volatile("popa"); \
- asm volatile("iret");
+        asm volatile("iret");
 
 extern void _set_idtr(void);
 

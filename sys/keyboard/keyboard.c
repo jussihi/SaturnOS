@@ -63,14 +63,19 @@ char* keyboard_get_ascii()
 
 void keyboard_irq()
 {
-  kprintf("INT KEYBOARDDD\n");
+  kprintf("KB INTERRUPT\n");
+
   IRQ_START;
-  
+
   if((in_port_byte(0x64) & 0x01) && curr_pos < 128);
   {
     keyboard_raw_buf[curr_pos++] = in_port_byte(0x60);
+
     //char a = in_port_byte(0x60);
   }
-  hal_end_irq(0x21);
+
+  hal_end_irq(1);
+
   IRQ_END;
+
 }

@@ -5,10 +5,10 @@
 #include "../../pic.h"
 #include "idt.h"
 
-//#define IRQ_START __asm__ __volatile__ ("add $0x1c, %esp"); \
+#define IRQ_START __asm__ __volatile__ ("add $0x1c, %esp"); \
                   __asm__ __volatile__ ("pusha");
 
-#define IRQ_START __asm__ __volatile__ ("pusha");
+//#define IRQ_START __asm__ __volatile__ ("pusha");
 
 #define IRQ_END   __asm__ __volatile__ ("popa"); \
                   __asm__ __volatile__ ("iret");

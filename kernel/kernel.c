@@ -6,6 +6,7 @@
 #include "../include/arch/x86/idt.h"
 #include "../include/hal.h"
 #include "../include/pic.h"
+#include "../include/pit.h"
 #include "../include/keyboard.h"
 
 
@@ -34,15 +35,28 @@ void kernel_entry()
 
   pic_init();
 
+  pit_init();
+
   keyboard_init();
 
   // while(1) {}
+  kprintf("a");
+  kprintf("b");
+  kprintf("c");
+  kprintf("d");
+  kprintf("e");
+  kprintf("f");
+  kprintf("a");
 
-  // __asm__ ("int $0x21"::);
+  
 
   kprintf("Everything init.\n");
 
-  __asm__ ("sti"::);
+  __asm__ ("int $0x21"::);
+
+  // __asm__ ("int $0x20"::);
+
+  //__asm__ ("sti"::);
 
   kprintf("Interrupts enabled, be careful.\n");
 
