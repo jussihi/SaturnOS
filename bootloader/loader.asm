@@ -13,14 +13,23 @@ ALIGN 4
 
 
 SECTION .text
-GLOBAL _start
-; These externs come from the C code.
 extern kernel_entry
 extern gdt_size_for_asm
 extern gdt
+extern tss
+GLOBAL _start
 _start:
 	cli ; disable interrupts
 	mov esp, kern_stack ; move stack pointer to somewhere hopefully safe
+
+	; move TSS to its correct place in the GDT table
+	mov ecx, tss
+	mov [gdt+0x28+2], cx
+	shr ecx, 16
+	mov [gdt+0x28+4], cl
+	shr ecx, 8
+	mov [gdt+0x28+7], cl
+
 
 	; load GDT (Global Descriptor Table) super early!
 	sub esp, 6
@@ -40,6 +49,10 @@ l1:
 	mov gs, cx
 	mov ss, cx
 	; GDT loading done
+
+	; load the task switch segment register
+	mov cx, (0x28|0x3) ; segment number | privilege level
+	ltr cx
 	
 	; Call HLL kernel
 	call kernel_entry
