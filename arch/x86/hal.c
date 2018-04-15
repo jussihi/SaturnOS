@@ -12,5 +12,5 @@ void hal_end_irq(uint8_t irq)
 
 void hal_set_int(uint8_t interrupt_num, uint32_t callback)
 {
-  idt_add_handler(interrupt_num, callback);
+  // idt_add_handler(interrupt_num, callback);
 }

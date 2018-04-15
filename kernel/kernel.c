@@ -15,6 +15,8 @@ static char* keyboard_buf = NULL;
 
 extern struct gdt_entry gdt[];
 
+extern IDT_t idt_table[256];
+
 void kernel_entry()
 {
 	// create the display driver and set it active. Also print something through it.
@@ -33,28 +35,21 @@ void kernel_entry()
 
   idt_init();
 
-  hal_init();
+  //hal_init();
 
-  pic_init();
+  //pic_init();
 
-  pit_init();
+  //pit_init();
 
-  keyboard_init();
-
-  // while(1) {}
-  kprintf("a");
-  kprintf("b");
-  kprintf("c");
-  kprintf("d");
-  kprintf("e");
-  kprintf("f");
-  kprintf("a");
-
-  
+  //keyboard_init();
 
   kprintf("Everything init.\n");
 
-  //__asm__ ("int $0x21"::);
+  kprintf("IDT 0: %x%x\n", idt_table[0].offset_lo, idt_table[0].offset_hi);
+  kprintf("ISR0:  %x", (uint32_t)isr0);
+
+
+  // __asm__ ("int $0x0"::);
 
   // __asm__ ("int $0x20"::);
 
@@ -62,7 +57,11 @@ void kernel_entry()
 
   kprintf("Interrupts enabled, be careful.\n");
 
-  
+  __asm__ ("int $0x1");
+
+  __asm__ ("int $0x10");
+
+  kprintf("2 interrupts called and both worked fine :)\n");
 
 	while(1)
   {

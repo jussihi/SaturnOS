@@ -2,74 +2,79 @@
 #include "../../include/display/display.h"
 #include "../../include/pic.h"
 
-static uint32_t idt_location = 0;
-static uint32_t idtr_location = 0;
+IDT_t idt_table[256];
 
-static uint8_t idt_test = 0;
-static uint32_t test_timeout = 0x1000;
-
+void call_lidt(uint32_t base, uint16_t limit)
+{
+  __asm__ __volatile__ ("subl $6, %%esp\n\t"
+                        "movw %w0, 0(%%esp)\n\t"
+                        "movl %1, 2(%%esp)\n\t"
+                        "lidt (%%esp)\n\t"
+                        "addl $6, %%esp" : : "rN"(limit), "r"(base));
+}
 
 void idt_init()
 {
-  // same idtr location as set up in the assembly file!
-  idt_location = 0x402000;
-  idtr_location = 0x401F00;
-
-  // PLAYGROUND
-  //idt_add_handler(0x20, (uint32_t)&idt_clock_try);
-  //_set_idtr();
-  //__asm__ ("sti"::);
-  //while(1) {}
-  // END PLAYGROUND
-
-  for(uint16_t i = 0; i < 256; i++)
-  {
-    idt_add_handler(i, (uint32_t)&_default_idt_handler);
-  }
-  // idt_add_handler(0x2f, (uint32_t)&idt_test_handler);
-  *(uint16_t*)idtr_location = 0x800 - 1;
-  *(uint32_t*)(idtr_location + 2) = idt_location;
-  _set_idtr();
-  //__asm__ ("sti"::);
-  // __asm__ __volatile__ ("int $0x2f");
-  //for(uint8_t i = 0; i < 100; i++)
-  //{
-    // for some reason, the insides of this if is being run twice ?
-    // something still messed up with the stack  ....
-  //  if(idt_test == 1)
-  //  {
-  //    kprintf("IDT successfully initialized.\n");
-  //    idt_add_handler(0x2f, (uint32_t)&_default_idt_handler);
-  //    break;
-  //  }
-  //}
-  //if(!idt_test)
-  //{
-  //  kprintf("IDT doesn't work!\n");
-  //}
-  //__asm__ ("cli"::);
-  kprintf("IDT INIT\n");
+  memset(idt_table, 0, sizeof(idt_table));
+  idt_set_handler(&idt_table[0],  isr0,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[1],  isr1,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[2],  isr2,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[3],  isr3,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[4],  isr4,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[5],  isr5,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[6],  isr6,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[7],  isr7,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[8],  isr8,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[9],  isr9,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[10], isr10, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[11], isr11, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[12], isr12, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[13], isr13, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[14], isr14, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[15], isr15, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[16], isr16, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[17], isr17, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[18], isr18, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[19], isr19, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[20], isr20, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[21], isr21, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[22], isr22, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[23], isr23, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[24], isr24, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[25], isr25, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[26], isr26, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[27], isr27, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[28], isr28, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[29], isr29, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[30], isr30, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[31], isr31, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[32], irq0,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[33], irq1,  IDT_TYPE_INTERRUPT, 0x0);
+  // IRQ 2 is the cascade of IRQ 8 to 15
+  idt_set_handler(&idt_table[35], irq3,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[36], irq4,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[37], irq5,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[38], irq6,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[39], irq7,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[40], irq8,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[41], irq9,  IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[42], irq10, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[43], irq11, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[44], irq12, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[45], irq13, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[46], irq14, IDT_TYPE_INTERRUPT, 0x0);
+  idt_set_handler(&idt_table[47], irq15, IDT_TYPE_INTERRUPT, 0x0);
+  call_lidt((uint32_t)idt_table, sizeof(idt_table) - 1);
   return;
 }
 
-void idt_add_handler(uint8_t interrupt_num, uint32_t callback)
+void idt_set_handler(IDT_t* entry, void(*handler)(void), uint8_t type, uint8_t access)
 {
-  IDT_t interrupt = {0, 0, 0, 0, 0};
-  interrupt.offset_lo = (uint16_t)(callback & 0x0000FFFF);
-  interrupt.selector = 0x10; // This is kind of the POINTER to the right entry from the beginning of the GDT. We use GDT code segment (3rd one)
-  interrupt.zero_byte = 0;
-  interrupt.type = IDT_32BIT_INTERRUPT_GATE | IDT_PRESENT; // ok access rights .. 
-  interrupt.offset_hi = (uint16_t)(callback >> 16);
-  *(IDT_t*)(idt_location + sizeof(IDT_t) * interrupt_num) = interrupt;
+  entry->offset_lo = (uint32_t)handler & 0xFFFF;
+  entry->selector = 0x8;
+  entry->zero_byte = 0;
+  entry->type = IDT_PRESENT | access << 5 | type;
+  entry->offset_hi = (uint32_t)handler >> 16 & 0xFFFF;
   return;
 }
 
-
-void idt_test_handler()
-{
-  INT_START;
-  idt_test = 1;
-  // pic_end_int(1);
-  INT_END;
-  return;
-}

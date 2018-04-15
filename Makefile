@@ -5,9 +5,9 @@
 AS=nasm
 ASFLAGS=-f elf32
 CC=gcc
-CFLAGS=-ffreestanding -fno-stack-protector -fno-pie -m32 -c -I./include
+CFLAGS=-ffreestanding -fno-stack-protector -fno-pie -m32 -O0 -c -I./include
 LDFLAGS=-melf_i386
-KERNOBJ=bootloader/loader.o kernel/kernel.o sys/io.o sys/display/display.o sys/display/consolemode.o arch/x86/gdt.o arch/x86/idt-asm.o arch/x86/idt.o arch/x86/pic.o arch/x86/hal.o arch/x86/pit.o sys/keyboard/keyboard.o
+KERNOBJ=bootloader/loader.o kernel/kernel.o sys/io.o sys/display/display.o sys/display/consolemode.o arch/x86/gdt.o arch/x86/interrupt_trampoline.o arch/x86/idt.o arch/x86/interrupt.o arch/x86/pic.o arch/x86/hal.o arch/x86/pit.o sys/keyboard/keyboard.o
 
 all: SaturnOS.iso
 
@@ -31,9 +31,6 @@ SaturnOS.iso: SaturnOS.bin
 SaturnOS.bin: linker.ld $(KERNOBJ)
 	ld $(LDFLAGS) -T $< -o $@ $(KERNOBJ)
 
-bootloader/bootsector.bin: bootloader/bootsector.asm
-	$(AS) -f bin bootloader/bootsector.asm -o bootloader/bootsector.bin
-
 bootloader/loader.o: bootloader/loader.asm
 	$(AS) $(ASFLAGS) bootloader/loader.asm -o bootloader/loader.o
 
@@ -49,8 +46,8 @@ sys/keyboard/%.o: sys/keyboard/%.c
 sys/display/%.o: sys/display/%.c
 	$(CC) $(CFLAGS) $< -o $@
 
-arch/x86/idt-asm.o: arch/x86/idt.asm
-	$(AS) $(ASFLAGS) arch/x86/idt.asm -o arch/x86/idt-asm.o
+arch/x86/interrupt_trampoline.o: arch/x86/interrupt_trampoline.asm
+	$(AS) $(ASFLAGS) arch/x86/interrupt_trampoline.asm -o arch/x86/interrupt_trampoline.o
 
 arch/x86/%.o: arch/x86/%.c
 	$(CC) $(CFLAGS) $< -o $@
