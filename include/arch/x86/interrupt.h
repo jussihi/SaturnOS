@@ -27,6 +27,10 @@ typedef struct
   uint32_t ss;  /* If (cs & 0x3) != 0 */
 } __attribute__((__packed__)) interrupt_context;
 
+void interrupt_init();
+
+void set_irq(uint8_t irq_num, void(*handler)());
+
 void interrupt_relay(interrupt_context* ctx);
 
 #endif

@@ -7,7 +7,7 @@ ASFLAGS=-f elf32
 CC=gcc
 CFLAGS=-ffreestanding -fno-stack-protector -fno-pie -m32 -O0 -c -I./include
 LDFLAGS=-melf_i386
-KERNOBJ=bootloader/loader.o kernel/kernel.o sys/io.o sys/display/display.o sys/display/consolemode.o arch/x86/gdt.o arch/x86/interrupt_trampoline.o arch/x86/idt.o arch/x86/interrupt.o arch/x86/pic.o arch/x86/hal.o arch/x86/pit.o sys/keyboard/keyboard.o
+KERNOBJ=bootloader/loader.o kernel/kernel.o sys/io.o sys/mutex.o sys/display/display.o sys/display/consolemode.o arch/x86/gdt.o arch/x86/interrupt_trampoline.o arch/x86/idt.o arch/x86/interrupt.o arch/x86/pic.o arch/x86/pit.o sys/keyboard/keyboard.o
 
 all: SaturnOS.iso
 

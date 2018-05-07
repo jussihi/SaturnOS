@@ -1,8 +1,8 @@
 #include "../../include/stdint.h"
 #include "../../include/arch/x86/pit.h"
-#include "../../include/arch/x86/hal.h"
 #include "../../include/display/display.h"
 
+/*
 void pit_irq()
 {
   asm volatile("add 0x1c, %esp");
@@ -61,3 +61,4 @@ void pit_init()
   pit_start_counter(200,PIT_OCW_COUNTER_0, PIT_OCW_MODE_SQUAREWAVEGEN);
   kprintf("PIT init done.\n");
 }
+*/

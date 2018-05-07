@@ -4,6 +4,7 @@
 #include "../../stdint.h"
 
 // https://wiki.osdev.org/PIC
+// PIC1 is master, PIC2 is slave
 
 #define PIC1    0x20    /* IO base address for master PIC */
 #define PIC2    0xA0    /* IO base address for slave PIC */
@@ -28,6 +29,12 @@
 
 void pic_init();
 
-void pic_end_int(uint8_t int_num);
+void pic_end_master();
+
+void pic_end_slave();
+
+uint16_t pic_get_irr();
+
+uint16_t pic_get_isr();
 
 #endif

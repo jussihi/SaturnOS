@@ -4,7 +4,7 @@
 #include "../include/display/consolemode.h"
 #include "../include/arch/x86/gdt.h"
 #include "../include/arch/x86/idt.h"
-#include "../include/hal.h"
+#include "../include/arch/x86/interrupt.h"
 #include "../include/pic.h"
 #include "../include/pit.h"
 #include "../include/keyboard.h"
@@ -35,13 +35,13 @@ void kernel_entry()
 
   idt_init();
 
-  //hal_init();
+  interrupt_init();
 
-  //pic_init();
+  pic_init();
 
   //pit_init();
 
-  //keyboard_init();
+  keyboard_init();
 
   kprintf("Everything init.\n");
 
@@ -53,25 +53,18 @@ void kernel_entry()
 
   // __asm__ ("int $0x20"::);
 
-  //__asm__ ("sti"::);
+  __asm__ ("sti"::);
 
   kprintf("Interrupts enabled, be careful.\n");
 
-  __asm__ ("int $0x1");
-
-  __asm__ ("int $0x10");
-
-  kprintf("2 interrupts called and both worked fine :)\n");
-
 	while(1)
   {
-    //keyboard_buf = keyboard_get_ascii();
-    //if(keyboard_buf[0] != 0)
-    //{
-    //  kprintf("jippikai");
-    //  kprintf("%s", keyboard_buf);
-    //  keyboard_buf[0] = 0;
-    //}
+    keyboard_buf = keyboard_get_ascii();
+    if(keyboard_buf[0] != 0)
+    {
+      kprintf("%s", keyboard_buf);
+      keyboard_buf[0] = 0;
+    }
   }
 	return;
 }

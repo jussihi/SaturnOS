@@ -1,25 +1,33 @@
 #include "../include/keyboard.h"
-#include "../include/hal.h"
 #include "../include/string.h"
 #include "../include/stddef.h"
 #include "../include/io.h"
 #include "../include/display/display.h"
+#include "../include/arch/x86/interrupt.h"
+#include "../include/mutex.h"
+
 
 
 static char keyboard_raw_buf[128] = {0};
 static char keyboard_ascii_buf[128] = {0};
 static uint8_t curr_pos = 0;
+static mutex kb_mutex;
 
 void keyboard_init()
 {
-  hal_set_int(0x21, (uint32_t)&keyboard_irq);
+  kprintf("setting irq to 0x%x\n", keyboard_irq);
+  set_irq(1, keyboard_irq);
+  curr_pos = 0;
+  //mutex_init(&kb_mutex);
 }
 
 void keyboard_get_buffer()
 {
+  //mutex_lock(&kb_mutex);
   keyboard_raw_buf[curr_pos] = 0;
   strcpy(keyboard_ascii_buf, keyboard_raw_buf);
   curr_pos = 0;
+  //mutex_unlock(&kb_mutex);
 }
 
 static char* _row1 = "qwertyuiop";
@@ -63,19 +71,10 @@ char* keyboard_get_ascii()
 
 void keyboard_irq()
 {
-  kprintf("KB INTERRUPT\n");
-
-  IRQ_START;
-
   if((in_port_byte(0x64) & 0x01) && curr_pos < 128);
   {
+    //mutex_lock(&kb_mutex);
     keyboard_raw_buf[curr_pos++] = in_port_byte(0x60);
-
-    //char a = in_port_byte(0x60);
+    //mutex_unlock(&kb_mutex);
   }
-
-  hal_end_irq(1);
-
-  IRQ_END;
-
 }
